@@ -9,25 +9,45 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
     <!-- Adding bootstratp 3.3.7 CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <!-- Linking style.css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+
+    <script src="assets/javascript/bootstrap.js"></script>
     <script src="assets/javascript/app.js"></script>
     <title>Trivia Game</title>
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <div class="jumbotron">
-                <h1>Trivia Game</h1>
-                <p>
-                    <a class="btn btn-primary btn-lg" id="start-button" href="#" role="button">Play Game</a>
-                </p>
+    <!-- <header> -->
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="jumbotron">
+                    <h1>Trivia Game</h1>
+                    <p>
+                        <a class="btn btn-primary btn-lg" id="start-button" href="#" role="button">Play Game</a>
+                    </p>
+                </div>
             </div>
-    </header>
+        </div>
+        <!-- </header> -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="well well-lg">
+                    <h3>Time Remaining: </h3>
+                    <p>
+                        <span id="time-remaining">30</span> seconds</p>
+                    <div class="question-container">
 
+                        <p class="question"></p>
+                        <div class="answer-container">
+                        </div>
 
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
