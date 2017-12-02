@@ -50,8 +50,10 @@ var quiz =
 var questionClass = ".question";
 var answerClass = ".answer-container";
 var errorClip = "/assets/images/wrong-answer.gif";
-var questionCount = 0;
+var questionCount = -1;
 var questionLog = [];
+var radioName = "userSelection";
+var radioID = "user-choice-radio";
 
 ////////////////////////////////////////////////////////////////
 //   functions
@@ -64,8 +66,9 @@ function determineQuestion() {
 
 function initializeGame() {
     // reset variables
-    questionCount = 0;
+    questionCount = -1;
     questionLog = [];
+    radioID = "";
 }
 
 function questionPopulator(number) {
@@ -84,10 +87,9 @@ function questionPopulator(number) {
         // add the choices to the html document
         for (i = 0; i < quiz[number].choices.length; i++) {
             var choice = quiz[number].choices[i];
-            // create a variable to store a unique radio id value.
-            var radioID = "choice" + i;
-            $(answerClass).append("<input type='radio' name='choices' id='" + radioID + "' value='" + i + "'> " + choice + "<br>");
+            $(answerClass).append("<input type='radio' name='" + radioName + "' id='" + radioID + "' data-value='" + i + "'>" + choice + "<br>");
         }
+        return;
         // If we have requested a new question but do not have any more questions to display, then quit
     } else {
         return;
@@ -103,11 +105,19 @@ $(document).ready(function () {
             console.log("#startButtonVisible: " + startButtonVisible);
         }
         // hide the start button
-        $("#start-button").hide(5000);
-        // Populate the question:
-        questionPopulator(0);
+        $("#start-button").hide(3000);
+        // determine which question to display
+        determineQuestion();
+        // TODO: Add timer for 30 seconds
 
-
-
+        // determine what choice has been selected
+        console.log("radioID: " + radioID);
+        $("input").click(function (event) {
+            // Capture the user's guess
+            userAnswer = $("input:checked").data("value");
+            if (debug) {
+                console.log("userAnswer: " + userAnswer);
+            }
+        });
     });
 });
