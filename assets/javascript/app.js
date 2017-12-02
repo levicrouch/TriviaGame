@@ -3,47 +3,111 @@
 ////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////
+//   Configuration
+////////////////////////////////////////////////////////////////
+var debug = true;
+
+////////////////////////////////////////////////////////////////
 //   question list
 ////////////////////////////////////////////////////////////////
 
-console.log("We got into app.js");
+// console.log("We got into app.js");
 
-var objQ = {
-    question1: "Besides Jerry Seinfeld, who co-created the Seinfeld sitcom?",
-    q1Answers: ["Michael Richards", "Jason Alexander", "Larry David", "Elaine Benes", "Stephen J. Cannell"],
-    q1Clip: "https://www.youtube.com/watch?v=4Jw6mKmozjM",
-    
-    question2: "Who performed the theme song for the sitcom Friends?",
-    q2Answers: ["The Breeders", "The Flaming Lips", "The Proclaimers", "Deep Blue Something", "The Rembrandts"],
-    q2Clip: "https://www.youtube.com/watch?v=Mecjelaza1o",
-    question3: "What year did 'Seinfeld' first air?",
-    q3Answers: ["1989", "1988", "1990", "1987", "1994"],
-    q3Clip: "https://www.youtube.com/watch?v=JpoEo2YW72Q",
-    question4: "Which of these is *Not* a character from Seinfeld",
-    q4Answers: ["Uncle Leo", "David Puddy", "Joey Tribbiani", "J.Peterman", "Babu"],
-    q4Clip: "https://gph.is/2cgkSxX",
-    question5: "In the final Episode of Seinfeld; what crime are Jerry, Elaine, George, and Kramer convicted of?",
-    q5Answers: ["Duty to Rescue", "Loitering", "Petty Theft", "Disorderly Conduct", "Vandalism"],
-    q5Clip: "https://www.youtube.com/watch?v=zPnK0NCn_MQ",
-    questionClass: ".question",
-    answerClass: ".answer-container",
-    errorClip: "/assets/images/wrong-answer.gif",
-    getSolution: function (property,index){return this.property[index]}
-    // answerClass: ".answer-" + 
-};
-$(document).ready(function() {
+var quiz =
+    [
+        {
+            question: "Besides Jerry Seinfeld, who co-created the Seinfeld sitcom?",
+            choices: ["Michael Richards", "Jason Alexander", "Larry David", "Julia Louis-Dreyfus", "Stephen J. Cannell"],
+            correctClip: "https://www.youtube.com/watch?v=4Jw6mKmozjM",
+            answer: 2,
+        },
+        {
+            question: "Who performed the theme song for the sitcom Friends?",
+            choices: ["The Breeders", "The Flaming Lips", "The Proclaimers", "Deep Blue Something", "The Rembrandts"],
+            correctClip: "https://www.youtube.com/watch?v=Mecjelaza1o",
+            answer: 4,
+        },
+        {
+            question: "What year did 'Seinfeld' first air?",
+            choices: ["1989", "1988", "1990", "1987", "1994"],
+            correctClip: "https://www.youtube.com/watch?v=JpoEo2YW72Q",
+            answer: 0,
+        },
+        {
+            question: "Which of these is *not* a character from Seinfeld?",
+            choices: ["Uncle Leo", "David Puddy", "Joey Tribbiani", "J.Peterman", "Babu"],
+            correctClip: "https://gph.is/2cgkSxX",
+            answer: 2,
+        },
+        {
+            question: "In the final Episode of Seinfeld; what crime are Jerry, Elaine, George, and Kramer convicted of?",
+            choices: ["Duty to Rescue", "Loitering", "Petty Theft", "Disorderly Conduct", "Vandalism"],
+            correctClip: "https://www.youtube.com/watch?v=zPnK0NCn_MQ",
+            answer: 0,
+        },
+    ];
 
-$("#start-button").click(function (event) {
-    // console.log("objQ.questionClass: " + objQ.questionClass);
-    // Add the question to the HTML
-    $(objQ.questionClass).html("<h3>" + objQ.question1 + "</h3>");
-    // Iterate through the objQ object and populate the answers with radio buttons
-    for (i = 0; i < objQ.q1Answers.length; i++) {
-        // create a variable to store a unique radio id value.
-        var radioID = "answer" + i;
-        $(objQ.answerClass).append("<input type='radio' name='answer' id='" + radioID + "' value='" + i + "'> " + objQ.q1Answers[i] + "<br>");
+var questionClass = ".question";
+var answerClass = ".answer-container";
+var errorClip = "/assets/images/wrong-answer.gif";
+var questionCount = 0;
+var questionLog = [];
+
+////////////////////////////////////////////////////////////////
+//   functions
+////////////////////////////////////////////////////////////////
+
+function determineQuestion() {
+    questionCount++
+    questionPopulator(questionCount);
+}
+
+function initializeGame() {
+    // reset variables
+    questionCount = 0;
+    questionLog = [];
+}
+
+function questionPopulator(number) {
+    // Determine which question to present
+    // if the questions logged are less that the quiz questions then proceed to show a question
+    if (questionLog.length <= quiz.length) {
+        // log the index of the question asked, so we will know when we are done
+        questionLog.push(number);
+        if (debug) {
+            console.log("questionLog: " + questionLog);
+            console.log("quiz[number]: " + quiz[number]);
+        }
+
+        // Add the question to the HTML
+        $(questionClass).html("<h3>" + quiz[number].question + "</h3>");
+        // add the choices to the html document
+        for (i = 0; i < quiz[number].choices.length; i++) {
+            var choice = quiz[number].choices[i];
+            // create a variable to store a unique radio id value.
+            var radioID = "choice" + i;
+            $(answerClass).append("<input type='radio' name='choices' id='" + radioID + "' value='" + i + "'> " + choice + "<br>");
+        }
+        // If we have requested a new question but do not have any more questions to display, then quit
+    } else {
+        return;
     }
+}
+
+$(document).ready(function () {
+
+    $("#start-button").click(function (event) {
+        // capture the current state of the start button "data-visible"
+        startButtonVisible = $("#start-button").data("visible");
+        if (startButtonVisible) {
+            console.log("#startButtonVisible: " + startButtonVisible);
+        }
+        // hide the start button
+        $("#start-button").hide(5000);
+        // Populate the question:
+        questionPopulator(0);
 
 
-});
+
+    });
 });
