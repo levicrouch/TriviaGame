@@ -11,8 +11,6 @@ var debug = true;
 //   question list
 ////////////////////////////////////////////////////////////////
 
-// console.log("We got into app.js");
-
 var quiz =
     [
         {
@@ -56,8 +54,10 @@ var quiz =
 //   variables and objects
 ////////////////////////////////////////////////////////////////
 var questionClass = ".question";
+var timeRemaining = "#time-remaining";
 var answerClass = ".answer-container";
-var errorClip = "/assets/images/wrong-answer.gif";
+var statusClass = ".status";
+var errorClip = "assets/images/wrong-answer.gif";
 var questionCount = -1;
 var questionLog = [];
 var radioName = "userSelection";
@@ -66,63 +66,125 @@ var timerProcessID;
 var timerRunning = false;
 var questionCorrect = null;
 var correctQuestions = 0;
+var inCorrectQuestions = 0;
 
 // timer object
 var timer = {
     //prevents the timer from being sped up unnecessarily
     questionTime: 20,
     clipTime: 10,
-    currentTime: 0,
     timerRunning: false,
-    count: function() {
-        // create a timer for questions
-        // timer.currentTime = timer.questionTime;
-        // create a timer for clips
-        // if (timer.currentTime > 0) {
+    count: function () {
+
+        if (timer.questionTime > 0) {
             // DONE: decrement time by 1, remember we cant use "this" here.
             timer.questionTime--;
-            // DONE: Use the variable we just created to show the converted time in the "display" div.
-            $("#time-remaining").text(timer.questionTime);
-        // } else {
-        //     timer.stop();
-        //     timer.reset();
-        // }
+            // DONE: Use the variable we just created to show the converted time in the "time-remaining" div.
+            $(timeRemaining).text(timer.questionTime);
+        } else {
+            timer.stop();
+            timer.reset();
+        }
 
     },
-    start: function() {
+    start: function () {
         // type = number;
         if (!timerRunning) {
             timerProcessID = setInterval(timer.count, 1000);
             timerRunning = true;
+
         }
     },
-    stop: function() {
+    stop: function () {
         // DONE: Use clearInterval to stop the count here and set the clock to not be running.
         clearInterval(timerProcessID);
         timerRunning = false;
     },
-    reset: function() {
-        timer.currentTime = 0;
+    reset: function () {
+        timer.questionTime = 20;
         // timer.clipTime = 10;
         timerRunning = false;
-        // DONE: Change the "display" div to "default"
-        $("#time-remaining").text(timer.questionTime);
+        // DONE: Change the "time-remaining" div to "default"
+        $(timeRemaining).text(timer.questionTime);
 
-    }
+    },
+    clipCount: function () {
+
+        if (timer.clipTime > 0) {
+            // Clear out the current value and set the clipTime
+            $(timeRemaining).empty();
+            $(timeRemaining).text(timer.clipTime);
+            // DONE: decrement time by 1.
+            timer.clipTime--;
+            // DONE: Use the variable we just created to show the time in the "time-remaining" div.
+            $(timeRemaining).text(timer.clipTime);
+        } else {
+            timer.stop();
+            timer.reset();
+        }
+
+    },
+    clipStart: function () {
+        // type = number;
+        if (!timerRunning) {
+            timerProcessID = setInterval(timer.clipCount, 1000);
+            timerRunning = true;
+
+        }
+    },
 };
 
 ////////////////////////////////////////////////////////////////
 //   functions
 ////////////////////////////////////////////////////////////////
 
+function initializeGame() {
+    // set the default timer value
+
+    questionCount = -1;
+    questionLog = [];
+
+}
+
+function removeStartButton() {
+    // capture the current state of the start button "data-visible"
+    startButtonVisible = $("#start-button").data("visible");
+    if (startButtonVisible) {
+        console.log("#startButtonVisible: " + startButtonVisible);
+    }
+    // hide the start button
+    $("#start-button").hide(2000);
+}
+function loadStatusHTML() {
+    // Load the time remaining, question, and answer divs into the html doc
+    $(statusClass).html("\
+    <div class='row'>\
+    <div class='col-sm-12'>\
+        <div class='well well-lg'>\
+            <div class='status'>\
+            <h3>Time Remaining: </h3>\
+    <p><span id='time-remaining'></span> seconds</p>\
+    <div class='question-container'>\
+        <div class='question'></div>\
+        <div class='answer-container'></div>\
+    </div>\
+    ");
+    // Set the timer
+    $(timeRemaining).text(timer.questionTime);
+}
 function determineQuestion() {
-    questionCount++
-    // call the function questionPopulator to populate the question on the page
-    questionPopulator(questionCount);
+    if (questionCount < quiz.length) {
+        questionCount++
+        // call the function questionPopulator to populate the question on the page
+        questionPopulator(questionCount);
+    } else {
+        initializeGame();
+    }
 }
 
 function initializeGame() {
-    // reset variables
+    // set the default timer value
+    $(timeRemaining).text(timer.questionTime);
     questionCount = -1;
     questionLog = [];
 }
@@ -158,17 +220,32 @@ function determineCorrectAnswer(number, userGuess) {
     if (quiz[number].answer === userGuess) {
         console.log("That is correct!");
         questionCorrect = true;
-        // $(questionClass).empty();
+        // Insert correct heading
         $(questionClass).html("<h3>That is correct!</h3>");
-        $(answerClass).empty();
-        $(answerClass).html("<img src=" + quiz[number].correctClip + " />");
         correctQuestions++;
         // stop and clear out timer
         timer.stop();
-        timer.start();
     } else {
         console.log("That is incorrect!");
         questionCorrect = false;
+        $(questionClass).html("<h3>That is Incorrect!</h3>");
+        inCorrectQuestions++;
+        // stop and clear out timer
+        timer.stop();
+    }
+    executeAfterClip(number)
+}
+
+function executeAfterClip(number) {
+    $(answerClass).empty();
+    if (questionCorrect) {
+        $(answerClass).html("<img src=" + quiz[number].correctClip + " />");
+        $(answerClass).show(); setTimeout(function () { $(answerClass).hide(); }, 5000);
+        return;
+    } else {
+        $(answerClass).html("<img src=" + errorClip + " />");
+        $(answerClass).show(); setTimeout(function () { $(answerClass).hide(); }, 5000);
+        return;
     }
 
 }
@@ -179,30 +256,25 @@ function resetPage() {
 
 $(document).ready(function () {
     // populate the timer text
-    // $("#time-remaining").text(timer.questionTime);
-    $("#start-button").click(timer.start)
-        // // capture the current state of the start button "data-visible"
-        // startButtonVisible = $("#start-button").data("visible");
-        // if (startButtonVisible) {
-        //     console.log("#startButtonVisible: " + startButtonVisible);
-        // }
-        // // hide the start button
-        // $("#start-button").hide(2000);
+    initializeGame();
+    $("#start-button").click(function () {
+        // Load the question and answer well for displaying the questions and answers
+        loadStatusHTML();
+        // Remove the start button
+        removeStartButton();
+        for (i = 0; i < quiz.length; i++) {
+            // Load the first question
+            determineQuestion();
+            // check for the user's choice
+            $("input").click(function (event) {
+                // Capture the user's guess
+                userAnswer = $("input:checked").data("value");
+                if (debug) {
+                    console.log("userAnswer: " + userAnswer);
+                }
+                determineCorrectAnswer(questionCount, userAnswer);
+            });
 
-        // // for (i = 0; i < quiz.length; i++) {
-        //     // determine which question to display
-        //     determineQuestion();
-            // done: Add timer for 30 seconds
-            
-            // determine what choice has been selected
-            // console.log("radioID: " + radioID);
-            // $("input").click(function (event) {
-            //     // Capture the user's guess
-            //     userAnswer = $("input:checked").data("value");
-            //     if (debug) {
-            //         console.log("userAnswer: " + userAnswer);
-            //     }
-            //     determineCorrectAnswer(questionCount, userAnswer);
-            // });
-        // }
+        }
+    });
 });
