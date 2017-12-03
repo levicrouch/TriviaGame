@@ -57,6 +57,7 @@ var questionClass = ".question";
 var timeRemaining = "#time-remaining";
 var answerClass = ".answer-container";
 var statusClass = ".status";
+var imageClip = ".image-clip";
 var errorClip = "assets/images/wrong-answer.gif";
 var questionCount = -1;
 var questionLog = [];
@@ -143,6 +144,9 @@ function initializeGame() {
 
     questionCount = -1;
     questionLog = [];
+    $(timeRemaining).text(timer.questionTime);
+    $(statusClass).hide();
+    $(imageClip).hide();
 
 }
 
@@ -156,21 +160,10 @@ function removeStartButton() {
     $("#start-button").hide(2000);
 }
 function loadStatusHTML() {
-    // Load the time remaining, question, and answer divs into the html doc
-    $(statusClass).html("\
-    <div class='row'>\
-    <div class='col-sm-12'>\
-        <div class='well well-lg'>\
-            <div class='status'>\
-            <h3>Time Remaining: </h3>\
-    <p><span id='time-remaining'></span> seconds</p>\
-    <div class='question-container'>\
-        <div class='question'></div>\
-        <div class='answer-container'></div>\
-    </div>\
-    ");
-    // Set the timer
-    $(timeRemaining).text(timer.questionTime);
+    // Show the time remaining, question, and answer divs into the html doc
+    $(statusClass).show();
+    // // Set the timer
+    // $(timeRemaining).text(timer.questionTime);
 }
 function determineQuestion() {
     if (questionCount < quiz.length) {
@@ -180,13 +173,6 @@ function determineQuestion() {
     } else {
         initializeGame();
     }
-}
-
-function initializeGame() {
-    // set the default timer value
-    $(timeRemaining).text(timer.questionTime);
-    questionCount = -1;
-    questionLog = [];
 }
 
 function questionPopulator(number) {
@@ -214,10 +200,14 @@ function questionPopulator(number) {
     }
 }
 
-function determineCorrectAnswer(number, userGuess) {
+function determineCorrectAnswer(number) {
+    userAnswer = $("input:checked").data("value");
+    if (debug) {
+        console.log("userAnswer: " + userAnswer);
+    }
     // identify what question we are on
     console.log("questionCount: " + number);
-    if (quiz[number].answer === userGuess) {
+    if (quiz[number].answer === userAnswer) {
         console.log("That is correct!");
         questionCorrect = true;
         // Insert correct heading
@@ -234,20 +224,21 @@ function determineCorrectAnswer(number, userGuess) {
         timer.stop();
     }
     executeAfterClip(number)
+    return
 }
 
 function executeAfterClip(number) {
-    $(answerClass).empty();
     if (questionCorrect) {
-        $(answerClass).html("<img src=" + quiz[number].correctClip + " />");
-        $(answerClass).show(); setTimeout(function () { $(answerClass).hide(); }, 5000);
-        return;
+        var afterClip = "<img src='" + quiz[number].correctClip + "' />";
     } else {
-        $(answerClass).html("<img src=" + errorClip + " />");
-        $(answerClass).show(); setTimeout(function () { $(answerClass).hide(); }, 5000);
-        return;
+        var afterClip = "<img src='" + errorClip + "' />";
     }
-
+    // temporarily hide the answer, question, and time-remaining classes
+    $(answerClass).hide(); $(imageClip).show(); setTimeout(function () {
+        $(imageClip).hide();
+        $(answerClass).empty();
+        $(answerClass).show();
+    }, 5000);
 }
 
 function resetPage() {
@@ -263,18 +254,13 @@ $(document).ready(function () {
         // Remove the start button
         removeStartButton();
         for (i = 0; i < quiz.length; i++) {
-            // Load the first question
+            // // Load the first question
             determineQuestion();
             // check for the user's choice
             $("input").click(function (event) {
                 // Capture the user's guess
-                userAnswer = $("input:checked").data("value");
-                if (debug) {
-                    console.log("userAnswer: " + userAnswer);
-                }
-                determineCorrectAnswer(questionCount, userAnswer);
+                determineCorrectAnswer(questionCount);
             });
-
         }
     });
 });
