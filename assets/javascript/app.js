@@ -139,6 +139,17 @@ var timer = {
 //   functions
 ////////////////////////////////////////////////////////////////
 
+function playQuiz() {
+    // Load the question
+    determineQuestion();
+    // check for the user's choice
+    $("input").click(function (event) {
+        // Load the question
+        determineQuestion();
+        // Capture the user's guess
+        determineCorrectAnswer(questionCount);
+    });
+}
 function initializeGame() {
     // set the default timer value
 
@@ -147,6 +158,7 @@ function initializeGame() {
     $(timeRemaining).text(timer.questionTime);
     $(statusClass).hide();
     $(imageClip).hide();
+
 
 }
 
@@ -196,7 +208,7 @@ function questionPopulator(number) {
         // return;
         // If we have requested a new question but do not have any more questions to display, then quit
     } else {
-        return;
+        // return;
     }
 }
 
@@ -254,13 +266,8 @@ $(document).ready(function () {
         // Remove the start button
         removeStartButton();
         for (i = 0; i < quiz.length; i++) {
-            // // Load the first question
-            determineQuestion();
-            // check for the user's choice
-            $("input").click(function (event) {
-                // Capture the user's guess
-                determineCorrectAnswer(questionCount);
-            });
+            playQuiz();
+
         }
     });
 });
