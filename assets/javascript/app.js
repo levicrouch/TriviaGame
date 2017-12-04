@@ -61,7 +61,7 @@ var imageClip = ".image-clip";
 var errorClip = "assets/images/wrong-answer.gif";
 var questionCount = -1;
 var questionLog = [];
-var radioName = "userSelection";
+var radioName = "question";
 var radioID = "user-choice-radio";
 var timerProcessID;
 var timerRunning = false;
@@ -141,13 +141,13 @@ var timer = {
 
 function playQuiz() {
     // Load the question
-    determineQuestion();
+    questionPopulator();
     // check for the user's choice
     $("input").click(function (event) {
-        // Load the question
-        determineQuestion();
         // Capture the user's guess
-        determineCorrectAnswer(questionCount);
+        determineCorrectAnswer();
+        // Load the questions
+        questionPopulator();
     });
 }
 function initializeGame() {
@@ -178,6 +178,7 @@ function loadStatusHTML() {
     // $(timeRemaining).text(timer.questionTime);
 }
 function determineQuestion() {
+
     if (questionCount < quiz.length) {
         questionCount++
         // call the function questionPopulator to populate the question on the page
@@ -187,38 +188,63 @@ function determineQuestion() {
     }
 }
 
-function questionPopulator(number) {
+function questionPopulator() {
     // Determine which question to present
     // if the questions logged are less that the quiz questions then proceed to show a question
-    if (questionLog.length <= quiz.length) {
-        // log the index of the question asked, so we will know when we are done
-        questionLog.push(number);
-        if (debug) {
-            console.log("questionLog: " + questionLog);
-            console.log("quiz[number]: " + quiz[number]);
+    // if (questionLog.length <= quiz.length) {
+    //     // log the index of the question asked, so we will know when we are done
+    //     questionLog.push(number);
+    //     if (debug) {
+    //         console.log("questionLog: " + questionLog);
+    //         console.log("quiz[number]: " + quiz[number]);
+    //     }
+    for (i = 0; i < quiz.length; i++) {
+        // Create a new div for the first question
+        var dynamicDiv = "question" + i;
+        $("#question").append().addClass(dynamicDiv);
+        dynamicDiv = "." + dynamicDiv;
+        if (debug){
+            console.log("created dynamicDiv: " + dynamicDiv);
         }
-
         // Add the question to the HTML
-        $(questionClass).html("<h3>" + quiz[number].question + "</h3>");
+        $(dynamicDiv).append("<h3>" + quiz[i].question + "</h3>");
         // add the choices to the html document
-        for (i = 0; i < quiz[number].choices.length; i++) {
-            var choice = quiz[number].choices[i];
-            $(answerClass).append("<input type='radio' name='" + radioName + "' id='" + radioID + "' data-value='" + i + "'>" + choice + "<br>");
+        $(answerClass).show();
+        for (c = 0; c < quiz[i].choices.length; c++) {
+            var choice = quiz[i].choices[c];
+            var dynamicAnswerDiv = "answer" + i;
+            $(dynamicDiv).append().addClass(dynamicAnswerDiv);
+            dynamicAnswerDiv = "." + dynamicAnswerDiv;
+            var dynamicRadioName = radioName + i;
+            $(dynamicAnswerDiv).append("<input type='radio' data-name='" + dynamicRadioName + "' id='" + radioID + "' data-value='" + c + "'>" + choice + "<br>");
         }
-        // return;
-        // If we have requested a new question but do not have any more questions to display, then quit
-    } else {
-        // return;
     }
+    // return;
+    // If we have requested a new question but do not have any more questions to display, then quit
 }
 
-function determineCorrectAnswer(number) {
+function determineCorrectAnswer() {
+    questionID = $("input").data("name");
     userAnswer = $("input:checked").data("value");
     if (debug) {
         console.log("userAnswer: " + userAnswer);
+        console.log("questionID: " + questionID);
     }
     // identify what question we are on
-    console.log("questionCount: " + number);
+    // console.log("questionCount: " + number);
+    if (questionID === "question0"){
+        var number = 0;
+    } else if (questionID === "question1"){
+        var number = 1;
+    }else if (questionID === "question2"){
+        var number = 2;
+    }else if (questionID === "question3"){
+        var number = 3;
+    }else if (questionID === "question4"){
+        var number = 4;
+    }
+
+    console.log("number: " + number);
     if (quiz[number].answer === userAnswer) {
         console.log("That is correct!");
         questionCorrect = true;
@@ -226,17 +252,17 @@ function determineCorrectAnswer(number) {
         $(questionClass).html("<h3>That is correct!</h3>");
         correctQuestions++;
         // stop and clear out timer
-        timer.stop();
+        // timer.stop();
     } else {
         console.log("That is incorrect!");
         questionCorrect = false;
         $(questionClass).html("<h3>That is Incorrect!</h3>");
         inCorrectQuestions++;
         // stop and clear out timer
-        timer.stop();
+        // timer.stop();
     }
     executeAfterClip(number)
-    return
+    // return
 }
 
 function executeAfterClip(number) {
@@ -265,9 +291,9 @@ $(document).ready(function () {
         loadStatusHTML();
         // Remove the start button
         removeStartButton();
-        for (i = 0; i < quiz.length; i++) {
-            playQuiz();
+        // for (i = 0; i < quiz.length; i++) {
+        playQuiz();
 
-        }
+        // }
     });
 });
