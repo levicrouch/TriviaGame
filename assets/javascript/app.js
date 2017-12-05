@@ -68,12 +68,13 @@ var timerRunning = false;
 var questionCorrect = null;
 var correctQuestions = 0;
 var inCorrectQuestions = 0;
+var unanswered = 0;
 
 // timer object
 var timer = {
     //prevents the timer from being sped up unnecessarily
     questionTime: 20,
-    clipTime: 10,
+    // clipTime: 10,
     timerRunning: false,
     count: function () {
 
@@ -100,6 +101,8 @@ var timer = {
         // DONE: Use clearInterval to stop the count here and set the clock to not be running.
         clearInterval(timerProcessID);
         timerRunning = false;
+        // count number of questions correct
+        // endOf
     },
     reset: function () {
         timer.questionTime = 20;
@@ -140,25 +143,31 @@ var timer = {
 ////////////////////////////////////////////////////////////////
 
 function playQuiz() {
-    // Load the question
+
+    // Load the question and the choices
     questionPopulator();
+// set the timer to the default time to take quiz
+// start the timer
+    // count how many questions were correct
+        // count how many questions were incorrect
+        // count how many questions were unanswered
+function calculateScore (){
+
+}
+
     // check for the user's choice
-    $("input").click(function (event) {
+    // $("input").click(function (event) {
         // Capture the user's guess
-        determineCorrectAnswer();
-        // Load the questions
-        questionPopulator();
+        // determineCorrectAnswer();
+        
+    
     });
 }
 function initializeGame() {
     // set the default timer value
-
-    questionCount = -1;
-    questionLog = [];
     $(timeRemaining).text(timer.questionTime);
     $(statusClass).hide();
-    $(imageClip).hide();
-
+    
 
 }
 
@@ -177,27 +186,20 @@ function loadStatusHTML() {
     // // Set the timer
     // $(timeRemaining).text(timer.questionTime);
 }
-function determineQuestion() {
+// function determineQuestion() {
 
-    if (questionCount < quiz.length) {
-        questionCount++
-        // call the function questionPopulator to populate the question on the page
-        questionPopulator(questionCount);
-    } else {
-        initializeGame();
-    }
-}
+//     if (questionCount < quiz.length) {
+//         questionCount++
+//         // call the function questionPopulator to populate the question on the page
+//         questionPopulator(questionCount);
+//     } else {
+//         initializeGame();
+//     }
+// }
 
 function questionPopulator() {
     // Determine which question to present
     // if the questions logged are less that the quiz questions then proceed to show a question
-    // if (questionLog.length <= quiz.length) {
-    //     // log the index of the question asked, so we will know when we are done
-    //     questionLog.push(number);
-    //     if (debug) {
-    //         console.log("questionLog: " + questionLog);
-    //         console.log("quiz[number]: " + quiz[number]);
-    //     }
     for (i = 0; i < quiz.length; i++) {
         // Create a new div for the first question
         var dynamicDiv = "question" + i;
@@ -234,6 +236,7 @@ function determineCorrectAnswer() {
     // console.log("questionCount: " + number);
     if (questionID === "question0"){
         var number = 0;
+        console.log("questionID:", questionID);
     } else if (questionID === "question1"){
         var number = 1;
     }else if (questionID === "question2"){
@@ -261,7 +264,7 @@ function determineCorrectAnswer() {
         // stop and clear out timer
         // timer.stop();
     }
-    executeAfterClip(number)
+    // executeAfterClip(number)
     // return
 }
 
