@@ -143,7 +143,7 @@ function playQuiz() {
     questionPopulator();
     // start timer
     timer.start();
-    // TODO: once time is up, the number of correct, incorrect, and unanswered questions is calculated
+    // DONE: once time is up, the number of correct, incorrect, and unanswered questions is calculated
 
 
 
@@ -220,19 +220,6 @@ function scoreQuiz() {
     $(statusClass).append("<p>Total Correct:", correctQuestions + "</p>");
     $(statusClass).append("<p>Total Incorrect:", inCorrectQuestions + "</p>");
     $(statusClass).append("<p>Total Unanswered:", unanswered + "</p>");
-    // $(statusClass).append("<a class='btn btn-primary btn-lg' id='replay-button' role='button'>Play Again?</a>");
-    // // user clicks the replay button we replay the game
-    // $("#replay-button").click(function () {
-    //     // $(statusClass).empty();
-    //     $(statusClass).hide();
-    //     $(wellLg).hide;
-    //     initializeGame();
-    //     $(statusClass).html("<div class='status'>\
-    //     <h3>Time Remaining: </h3>\
-    //     <p>\
-    //         <span id='time-remaining'></span> seconds</p>");
-    //     playQuiz();
-    // });
 
 }
 
@@ -250,11 +237,4 @@ $(document).ready(function () {
 
     });
 
-
-
-    // TODO: start a timer that clicks down from 30 seconds 
-    // TODO: user has 30 seconds to answer all questions on the page
-
-    // TODO: once the score is calculated, it is displayed to the user for review
-    // TODO: user then clicks a new button to reset the game and can play again.
 });
